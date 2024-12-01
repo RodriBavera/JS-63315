@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 
 // Lista de profesionales en el consultorio
 function principal() {
