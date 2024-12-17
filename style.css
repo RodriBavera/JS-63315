@@ -36,29 +36,20 @@
     font-size: 12px;
 }
 
-.horarios {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.horario {
-    padding: 10px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-}
-
-.horario.disponible {
-    background-color: green;
-    color: white;
-}
-
-.horario.ocupado {
-    background-color: red;
-    color: white;
-    cursor: not-allowed;
-}
-
 #buscador {
     width: 300px;
 }
+
+.btn-horario {
+    margin: 5px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-horario.seleccionado {
+    background-color: #f44336;
+}
+
