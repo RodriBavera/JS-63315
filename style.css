@@ -50,6 +50,8 @@
 }
 
 .btn-horario.seleccionado {
-    background-color: #f44336;
+    background-color: red;
+    color: white;
+    border: 1px solid #900;
 }
 

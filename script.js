@@ -166,84 +166,113 @@ function mostrarFormulario(profesionalId, profesionales) {
     const formulario = document.getElementById("formulario");
     formulario.addEventListener("submit", event => {
         event.preventDefault();
-        guardarTurnoFormulario(profesional);
     });
 }
 
 function manejarFechaYHorarios(fecha, profesional) {
     const contenedorHorarios = document.getElementById("contenedorHorarios");
+    const btnConfirmar = document.createElement("button");
 
-    // Verificar si es un día hábil
+    // Configuración del botón "Confirmar Turno"
+    btnConfirmar.textContent = "Confirmar Turno";
+    btnConfirmar.id = "btnConfirmarTurno";
+    btnConfirmar.disabled = true; // Deshabilitado por defecto
+    btnConfirmar.style.marginTop = "10px";
+    contenedorHorarios.innerHTML = ""; // Limpiar horarios anteriores
+
+    // Agregar botón al contenedor
+    contenedorHorarios.parentElement.appendChild(btnConfirmar);
+
     if (!esDiaHabil(fecha)) {
         Swal.fire({
-            title: 'Fecha no válida',
-            text: 'Elige una fecha válida (lunes a viernes).',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
+            title: "Fecha no válida",
+            text: "Elige una fecha válida (lunes a viernes).",
+            icon: "error",
+            confirmButtonText: "Aceptar",
         });
         contenedorHorarios.innerHTML = `<p style="color: red;">Elige una fecha válida (lunes a viernes).</p>`;
         return;
     }
 
-    // Obtener los turnos reservados
     const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-
-    // Filtrar horarios reservados para la fecha seleccionada
     const turnosReservados = turnos.filter(turno => turno.fecha === fecha).map(turno => turno.horario);
 
-    // Mostrar los horarios disponibles (filtrando los ya reservados)
     contenedorHorarios.innerHTML = profesional.horariosDisponibles
-        .filter(horario => !turnosReservados.includes(horario)) // Excluir horarios reservados
-        .map(horario => `
-            <button class="btn-horario" data-horario="${horario}">${horario}</button>
-        `).join("");
+        .filter(horario => !turnosReservados.includes(horario))
+        .map(horario => `<button class="btn-horario" data-horario="${horario}">${horario}</button>`)
+        .join("");
 
+
+    // Event listener para los botones de horarios
     document.querySelectorAll(".btn-horario").forEach(button => {
         button.addEventListener("click", () => {
+            // Remover la clase "seleccionado" de otros botones
             document.querySelectorAll(".btn-horario").forEach(btn => btn.classList.remove("seleccionado"));
+            // Agregar la clase "seleccionado" al botón clickeado
             button.classList.add("seleccionado");
+            // Habilitar el botón "Confirmar Turno"
+            btnConfirmar.disabled = false;
         });
     });
+
+    btnConfirmar.addEventListener("click", () => {
+        try {
+            const nombre = document.getElementById("nombre").value;
+            const apellido = document.getElementById("apellido").value;
+            const dni = document.getElementById("dni").value;
+            const obraSocial = document.getElementById("obraSocial").value;
+            const fecha = document.getElementById("fecha").value;
+            const horario = document.querySelector(".btn-horario.seleccionado")?.getAttribute("data-horario");
+    
+            // Verificar que se hayan completado todos los campos y se haya seleccionado un horario
+            if (!nombre || !apellido || !dni || !obraSocial || !fecha || !horario) {
+                Swal.fire({
+                    title: "Error",
+                    text: "Por favor, completa todos los campos y selecciona un horario.",
+                    icon: "error",
+                    confirmButtonText: "Aceptar",
+                });
+                return;
+            }
+    
+            // Guardar el turno en localStorage
+            const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+            turnos.push({
+                profesional: profesional.nombre,
+                especialidad: profesional.especialidad,
+                nombre,
+                apellido,
+                dni,
+                obraSocial,
+                fecha,
+                horario,
+            });
+            localStorage.setItem("turnos", JSON.stringify(turnos));
+    
+            // Mostrar confirmación
+            Swal.fire({
+                title: "Confirmación",
+                text: `Turno confirmado: ${profesional.nombre} el ${fecha} a las ${horario}. ¡Gracias, ${nombre}!`,
+                icon: "success",
+                confirmButtonText: "Ok",
+            }).then(() => {
+                principal();
+                document.getElementById("contenedorCalendario").innerHTML = "";
+            });
+    
+        } catch (error) {
+            console.error("Error al confirmar el turno:", error);
+            Swal.fire({
+                title: "Error",
+                text: "Hubo un problema al confirmar el turno.",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        }
+    });
 }
 
-function guardarTurnoFormulario(profesional) {
-    const nombre = document.getElementById("nombre").value;
-    const apellido = document.getElementById("apellido").value;
-    const dni = document.getElementById("dni").value;
-    const obraSocial = document.getElementById("obraSocial").value;
-    const fecha = document.getElementById("fecha").value;
-    const horario = document.querySelector(".btn-horario.seleccionado")?.getAttribute("data-horario");
 
-    if (!horario) {
-        alert("Por favor selecciona un horario.");
-        return;
-    }
-
-    // Guardar turno en localStorage
-    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    turnos.push({
-        profesional: profesional.nombre,
-        especialidad: profesional.especialidad,
-        nombre,
-        apellido,
-        dni,
-        obraSocial,
-        fecha,
-        horario,
-        reservado: true
-    });
-    localStorage.setItem("turnos", JSON.stringify(turnos));
-
-    Swal.fire({
-        title: 'Confirmación',
-        text: `Turno confirmado: ${profesional.nombre} el ${fecha} a las ${horario}. ¡Gracias, ${nombre}!`,
-        icon: 'success',
-        confirmButtonText: 'Ok'
-    }).then(() => {
-        principal();
-        document.getElementById("contenedorCalendario").innerHTML = '';
-    });
-}
 
 
 document.addEventListener("DOMContentLoaded", principal);
