@@ -1,0 +1,164 @@
+[
+    {
+        "id": 101,
+        "nombre": "Dr. Juan Pérez",
+        "especialidad": "Pediatra",
+        "obraSocial": [
+            "Sempre",
+            "Particular"
+        ],
+        "diasDisponibles": [
+            "lunes",
+            "miércoles",
+            "viernes"
+        ],
+        "horariosDisponibles": [
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00"
+        ],
+        "rutaImagen": "DrJuanPerez.JPG"
+    },
+    {
+        "id": 102,
+        "nombre": "Dra. Ana García",
+        "especialidad": "Cardióloga",
+        "obraSocial": [
+            "Osde",
+            "Sempre",
+            "Particular"
+        ],
+        "diasDisponibles": [
+            "martes",
+            "jueves"
+        ],
+        "horariosDisponibles": [
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00"
+        ],
+        "rutaImagen": "DraAnaGarcia.JPG"
+    },
+    {
+        "id": 103,
+        "nombre": "Dr. Luis Martínez",
+        "especialidad": "Dermatólogo",
+        "obraSocial": [
+            "Swiss Medical",
+            "Sancor Salud",
+            "Particular"
+        ],
+        "diasDisponibles": [
+            "lunes",
+            "martes",
+            "jueves",
+            "viernes"
+        ],
+        "horariosDisponibles": [
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00"
+        ],
+        "rutaImagen": "DrLuisMartinez.JPG"
+    },
+    {
+        "id": 104,
+        "nombre": "Lic. Alejandro Gonzalez",
+        "especialidad": "Nutricionista",
+        "obraSocial": [
+            "Swiss Medical",
+            "Osde",
+            "Sancor Salud",
+            "Particular"
+        ],
+        "diasDisponibles": [
+            "lunes",
+            "martes",
+            "jueves"
+        ],
+        "horariosDisponibles": [
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00"
+        ],
+        "rutaImagen": "LicAlejandroGonzalez.JPG"
+    },
+    {
+        "id": 105,
+        "nombre": "Lic. Gisela Alecha",
+        "especialidad": "Psicologa",
+        "obraSocial": [
+            "Swiss Medical",
+            " Osde",
+            " Sempre",
+            "Particular"
+        ],
+        "diasDisponibles": [
+            "lunes",
+            "martes",
+            "miercoles",
+            "jueves"
+        ],
+        "horariosDisponibles": [
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00"
+        ],
+        "rutaImagen": "LicGiselaAlecha.JPG"
+    },
+    {
+        "id": 106,
+        "nombre": "Dra. Catalina Bavera",
+        "especialidad": "Pediatra",
+        "obraSocial": [
+            "Sancor Salud",
+            " Osde",
+            " Sempre",
+            "Particular"
+        ],
+        "diasDisponibles": [
+            "lunes",
+            "martes",
+            "miercoles",
+            "jueves",
+            "viernes"
+        ],
+        "horariosDisponibles": [
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00"
+        ],
+        "rutaImagen": "DraCatalinaBavera.JPG"
+    }
+]

@@ -1,68 +1,32 @@
-function principal() {
-    const profesionalesIniciales = [
-        {
-            id: 101,
-            nombre: "Dr. Juan Pérez",
-            especialidad: "Pediatra",
-            obraSocial: ["Sempre", "Particular"],
-            diasDisponibles: ["lunes", "miércoles", "viernes"],
-            horariosDisponibles: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
-            rutaImagen: "DrJuanPerez.JPG"
-        },
-        {
-            id: 102,
-            nombre: "Dra. Ana García",
-            especialidad: "Cardióloga",
-            obraSocial: ["Osde", "Sempre", "Particular"],
-            diasDisponibles: ["martes", "jueves"],
-            horariosDisponibles: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
-            rutaImagen: "DraAnaGarcia.JPG"
-        },
-        {
-            id: 103,
-            nombre: "Dr. Luis Martínez",
-            especialidad: "Dermatólogo",
-            obraSocial: ["Swiss Medical", "Sancor Salud", "Particular"],
-            diasDisponibles: ["lunes", "martes", "jueves", "viernes"],
-            horariosDisponibles: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
-            rutaImagen: "DrLuisMartinez.JPG"
-        },
-        {
-            id: 104,
-            nombre: "Lic. Alejandro Gonzalez",
-            especialidad: "Nutricionista",
-            obraSocial: ["Swiss Medical", "Osde", "Sancor Salud", "Particular"],
-            diasDisponibles: ["lunes", "martes", "jueves"],
-            horariosDisponibles: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
-            rutaImagen: "LicAlejandroGonzalez.JPG"
-        },
-        {
-            id: 105,
-            nombre: "Lic. Gisela Alecha",
-            especialidad: "Psicologa",
-            obraSocial: ["Swiss Medical", " Osde", " Sempre", "Particular"],
-            diasDisponibles: ["lunes", "martes", "miercoles", "jueves"],
-            horariosDisponibles: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"],
-            rutaImagen: "LicGiselaAlecha.JPG"
-        },
-        {
-            id: 106,
-            nombre: "Dra. Catalina Bavera",
-            especialidad: "Pediatra",
-            obraSocial: ["Sancor Salud", " Osde", " Sempre", "Particular"],
-            diasDisponibles: ["lunes", "martes", "miercoles", "jueves", "viernes"],
-            horariosDisponibles: ["14:00", "15:00", "16:00", "17:00", "18:00", "19:00"],
-            rutaImagen: "DraCatalinaBavera.JPG"
+async function fetchProfesionales() {
+    try {
+        const response = await fetch("./info.json");
+        if (!response.ok) {
+            throw new Error("Error al cargar los profesionales");
         }
-    ];
-
-    if (!localStorage.getItem("profesionales")) {
-        localStorage.setItem("profesionales", JSON.stringify(profesionalesIniciales));
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+        Swal.fire({
+            title: "Error",
+            text: "No se pudo cargar la lista de profesionales. Por favor, inténtalo más tarde.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+        });
+        return [];
+    }
+}
+async function principal() {
+    const profesionales = await fetchProfesionales();
+    if (!profesionales.length) {
+        return;
     }
 
+    localStorage.setItem("profesionales", JSON.stringify(profesionales));
     const profesionalesGuardados = JSON.parse(localStorage.getItem("profesionales"));
-    crearTarjetasProfesionales(profesionalesGuardados);
-    agregarEventoBusqueda(profesionalesGuardados);
+
+    crearTarjetasProfesionales(profesionales);
+    agregarEventoBusqueda(profesionales);
 }
 
 document.addEventListener("DOMContentLoaded", principal);
@@ -171,108 +135,110 @@ function mostrarFormulario(profesionalId, profesionales) {
 
 function manejarFechaYHorarios(fecha, profesional) {
     const contenedorHorarios = document.getElementById("contenedorHorarios");
-    const btnConfirmar = document.createElement("button");
+    const contenedorBoton = document.getElementById("contenedorBotonConfirmar");
 
-    // Configuración del botón "Confirmar Turno"
-    btnConfirmar.textContent = "Confirmar Turno";
-    btnConfirmar.id = "btnConfirmarTurno";
-    btnConfirmar.disabled = true; // Deshabilitado por defecto
-    btnConfirmar.style.marginTop = "10px";
-    contenedorHorarios.innerHTML = ""; // Limpiar horarios anteriores
-
-    // Agregar botón al contenedor
-    contenedorHorarios.parentElement.appendChild(btnConfirmar);
+    // Limpiar horarios y botón existentes
+    contenedorHorarios.innerHTML = "";
+    if (contenedorBoton) contenedorBoton.innerHTML = "";
 
     if (!esDiaHabil(fecha)) {
-        Swal.fire({
-            title: "Fecha no válida",
-            text: "Elige una fecha válida (lunes a viernes).",
-            icon: "error",
-            confirmButtonText: "Aceptar",
-        });
-        contenedorHorarios.innerHTML = `<p style="color: red;">Elige una fecha válida (lunes a viernes).</p>`;
+        mostrarMensajeError("Elige una fecha válida (lunes a viernes).", contenedorHorarios);
         return;
     }
 
-    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    const turnosReservados = turnos.filter(turno => turno.fecha === fecha).map(turno => turno.horario);
+    const turnosReservados = obtenerTurnosReservados(fecha);
+    const horariosDisponibles = profesional.horariosDisponibles.filter(
+        horario => !turnosReservados.includes(horario)
+    );
 
-    contenedorHorarios.innerHTML = profesional.horariosDisponibles
-        .filter(horario => !turnosReservados.includes(horario))
+    if (horariosDisponibles.length === 0) {
+        mostrarMensajeError("No hay horarios disponibles para esta fecha.", contenedorHorarios);
+        return;
+    }
+
+    renderizarHorarios(horariosDisponibles, contenedorHorarios, profesional, fecha);
+}
+
+function mostrarMensajeError(mensaje, contenedor) {
+    contenedor.innerHTML = `<p style="color: red;">${mensaje}</p>`;
+}
+
+function obtenerTurnosReservados(fecha) {
+    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+    return turnos.filter(turno => turno.fecha === fecha).map(turno => turno.horario);
+}
+
+function renderizarHorarios(horarios, contenedor, profesional, fecha) {
+    contenedor.innerHTML = horarios
         .map(horario => `<button class="btn-horario" data-horario="${horario}">${horario}</button>`)
         .join("");
 
-
-    // Event listener para los botones de horarios
     document.querySelectorAll(".btn-horario").forEach(button => {
         button.addEventListener("click", () => {
-            // Remover la clase "seleccionado" de otros botones
-            document.querySelectorAll(".btn-horario").forEach(btn => btn.classList.remove("seleccionado"));
-            // Agregar la clase "seleccionado" al botón clickeado
-            button.classList.add("seleccionado");
-            // Habilitar el botón "Confirmar Turno"
-            btnConfirmar.disabled = false;
+            seleccionarHorario(button, contenedor, profesional, fecha);
         });
-    });
-
-    btnConfirmar.addEventListener("click", () => {
-        try {
-            const nombre = document.getElementById("nombre").value;
-            const apellido = document.getElementById("apellido").value;
-            const dni = document.getElementById("dni").value;
-            const obraSocial = document.getElementById("obraSocial").value;
-            const fecha = document.getElementById("fecha").value;
-            const horario = document.querySelector(".btn-horario.seleccionado")?.getAttribute("data-horario");
-    
-            // Verificar que se hayan completado todos los campos y se haya seleccionado un horario
-            if (!nombre || !apellido || !dni || !obraSocial || !fecha || !horario) {
-                Swal.fire({
-                    title: "Error",
-                    text: "Por favor, completa todos los campos y selecciona un horario.",
-                    icon: "error",
-                    confirmButtonText: "Aceptar",
-                });
-                return;
-            }
-    
-            // Guardar el turno en localStorage
-            const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-            turnos.push({
-                profesional: profesional.nombre,
-                especialidad: profesional.especialidad,
-                nombre,
-                apellido,
-                dni,
-                obraSocial,
-                fecha,
-                horario,
-            });
-            localStorage.setItem("turnos", JSON.stringify(turnos));
-    
-            // Mostrar confirmación
-            Swal.fire({
-                title: "Confirmación",
-                text: `Turno confirmado: ${profesional.nombre} el ${fecha} a las ${horario}. ¡Gracias, ${nombre}!`,
-                icon: "success",
-                confirmButtonText: "Ok",
-            }).then(() => {
-                principal();
-                document.getElementById("contenedorCalendario").innerHTML = "";
-            });
-    
-        } catch (error) {
-            console.error("Error al confirmar el turno:", error);
-            Swal.fire({
-                title: "Error",
-                text: "Hubo un problema al confirmar el turno.",
-                icon: "error",
-                confirmButtonText: "Aceptar"
-            });
-        }
     });
 }
 
+function seleccionarHorario(button, contenedorHorarios, profesional, fecha) {
+    // Remover selección previa
+    document.querySelectorAll(".btn-horario").forEach(btn => btn.classList.remove("seleccionado"));
+    button.classList.add("seleccionado");
 
+    const horarioSeleccionado = button.getAttribute("data-horario");
 
+    // Crear o actualizar botón confirmar
+    let contenedorBoton = document.getElementById("contenedorBotonConfirmar");
+    if (!contenedorBoton) {
+        contenedorBoton = document.createElement("div");
+        contenedorBoton.id = "contenedorBotonConfirmar";
+        contenedorHorarios.parentElement.appendChild(contenedorBoton);
+    }
 
-document.addEventListener("DOMContentLoaded", principal);
+    contenedorBoton.innerHTML = `<button id="btnConfirmarTurno">Confirmar Turno</button>`;
+    document.getElementById("btnConfirmarTurno").onclick = () =>
+        confirmarTurno(profesional, fecha, horarioSeleccionado);
+}
+
+function confirmarTurno(profesional, fecha, horario) {
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const dni = document.getElementById("dni").value;
+    const obraSocial = document.getElementById("obraSocial").value;
+
+    if ([nombre, apellido, dni, obraSocial, fecha, horario].some(campo => !campo)) {
+        Swal.fire({
+            title: "Error",
+            text: "Por favor, completa todos los campos y selecciona un horario.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+        });
+        return;
+    }
+
+    guardarTurno(profesional, fecha, horario, nombre, apellido, dni, obraSocial);
+    Swal.fire({
+        title: "Confirmación",
+        text: `Turno confirmado: ${profesional.nombre} el ${fecha} a las ${horario}. ¡Gracias, ${nombre}!`,
+        icon: "success",
+        confirmButtonText: "Ok",
+    }).then(() => {
+        document.getElementById("contenedorCalendario").innerHTML = "";
+        principal();
+    });
+}
+
+function guardarTurno(profesional, fecha, horario, nombre, apellido, dni, obraSocial) {
+    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+    turnos.push({
+        profesional: profesional.nombre,
+        especialidad: profesional.especialidad,
+        nombre,
+        apellido,
+        dni,
+        obraSocial,
+        fecha,
+        horario,
+    });
+    localStorage.setItem("turnos", JSON.stringify(turnos));
+}
