@@ -16,6 +16,7 @@ async function fetchProfesionales() {
         return [];
     }
 }
+
 async function principal() {
     const profesionales = await fetchProfesionales();
     if (!profesionales.length) {
@@ -200,21 +201,67 @@ function seleccionarHorario(button, contenedorHorarios, profesional, fecha) {
         confirmarTurno(profesional, fecha, horarioSeleccionado);
 }
 
-function confirmarTurno(profesional, fecha, horario) {
-    const nombre = document.getElementById("nombre").value;
-    const apellido = document.getElementById("apellido").value;
-    const dni = document.getElementById("dni").value;
+function validarCampos() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const dni = document.getElementById("dni").value.trim();
     const obraSocial = document.getElementById("obraSocial").value;
+    const fecha = document.getElementById("fecha").value.trim();
+    const horarioSeleccionado = document.querySelector(".btn-horario.seleccionado");
 
-    if ([nombre, apellido, dni, obraSocial, fecha, horario].some(campo => !campo)) {
+    let mensajeError = "";
+
+    // Validar nombre y apellido
+    if (!/^[a-zA-ZÁÉÍÓÚÑáéíóúñ\s]+$/.test(nombre)) {
+        mensajeError += "El nombre solo debe contener letras y no estar vacío.\n";
+    }
+    if (!/^[a-zA-ZÁÉÍÓÚÑáéíóúñ\s]+$/.test(apellido)) {
+        mensajeError += "El apellido solo debe contener letras y no estar vacío.\n";
+    }
+
+    // Validar DNI
+    if (!/^\d{7,}$/.test(dni)) {
+        mensajeError += "El DNI debe ser un número con al menos 7 dígitos.\n";
+    }
+
+    // Validar obra social
+    if (!obraSocial) {
+        mensajeError += "Selecciona una obra social.\n";
+    }
+
+    // Validar fecha
+    if (!fecha) {
+        mensajeError += "Selecciona una fecha válida.\n";
+    }
+
+    // Validar horario
+    if (!horarioSeleccionado) {
+        mensajeError += "Selecciona un horario disponible.\n";
+    }
+
+    // Mostrar errores si existen
+    if (mensajeError) {
         Swal.fire({
             title: "Error",
-            text: "Por favor, completa todos los campos y selecciona un horario.",
+            text: mensajeError,
             icon: "error",
             confirmButtonText: "Aceptar",
         });
+        return false;
+    }
+
+    return true;
+}
+
+function confirmarTurno(profesional, fecha, horario) {
+    if (!validarCampos()) {
         return;
     }
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const dni = document.getElementById("dni").value.trim();
+    const obraSocial = document.getElementById("obraSocial").value;
 
     guardarTurno(profesional, fecha, horario, nombre, apellido, dni, obraSocial);
     Swal.fire({
@@ -230,15 +277,134 @@ function confirmarTurno(profesional, fecha, horario) {
 
 function guardarTurno(profesional, fecha, horario, nombre, apellido, dni, obraSocial) {
     const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    turnos.push({
-        profesional: profesional.nombre,
-        especialidad: profesional.especialidad,
-        nombre,
-        apellido,
-        dni,
-        obraSocial,
-        fecha,
-        horario,
-    });
+    turnos.push({ profesional, fecha, horario, nombre, apellido, dni, obraSocial });
     localStorage.setItem("turnos", JSON.stringify(turnos));
+}
+
+document.getElementById("btnAdministrarTurnos").addEventListener("click", () => {
+    const contenedorTurnos = document.getElementById("contenedorTurnos");
+    contenedorTurnos.style.display = contenedorTurnos.style.display === "none" ? "block" : "none";
+    mostrarTurnos(); // Aquí llamas a la función para mostrar los turnos
+});
+
+function mostrarTurnos() {
+    const contenedorTurnos = document.getElementById("listaTurnos");
+    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+
+    if (turnos.length === 0) {
+        contenedorTurnos.innerHTML = "<p>No hay turnos registrados.</p>";
+    } else {
+        contenedorTurnos.innerHTML = turnos.map((turno, index) => `
+            <div class="turno">
+                <p><strong>Profesional:</strong> ${turno.profesional.nombre}</p>
+                <p><strong>Fecha:</strong> ${turno.fecha}</p>
+                <p><strong>Horario:</strong> ${turno.horario}</p>
+                <p><strong>Nombre:</strong> ${turno.nombre} ${turno.apellido}</p>
+                <p><strong>Obra Social:</strong> ${turno.obraSocial}</p>
+                <button class="btn-modificar" data-index="${index}">Modificar</button>
+                <button class="btn-eliminar" data-index="${index}">Eliminar</button>
+            </div>
+        `).join("");
+    }
+
+    // Añadir eventos para el botón de modificar
+    document.querySelectorAll(".btn-modificar").forEach(button => {
+        button.addEventListener("click", event => {
+            const index = event.target.getAttribute("data-index");
+            modificarTurno(index);
+        });
+    });
+
+    // Añadir eventos para el botón de eliminar
+    document.querySelectorAll(".btn-eliminar").forEach(button => {
+        button.addEventListener("click", event => {
+            const index = event.target.getAttribute("data-index");
+            eliminarTurno(index);
+        });
+    });
+}
+
+function eliminarTurno(index) {
+    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+    const turnosActualizados = turnos.filter((turno, i) => i !== parseInt(index));
+    localStorage.setItem("turnos", JSON.stringify(turnosActualizados));
+    mostrarTurnos();
+}
+
+
+function modificarTurno(index) {
+    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+    const turno = turnos[index]; // Obtener el turno a modificar
+
+    // Rellenar el formulario de modificación con los datos del turno seleccionado
+    const contenedorFormulario = document.getElementById("contenedorFormularioModificacion");
+
+    contenedorFormulario.innerHTML = `
+        <h3>Modificar Turno</h3>
+        <form id="formularioModificacion">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" value="${turno.nombre}" required>
+
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" value="${turno.apellido}" required>
+
+            <label for="dni">DNI:</label>
+            <input type="text" id="dni" value="${turno.dni}" required>
+
+            <label for="obraSocial">Obra Social:</label>
+            <input type="text" id="obraSocial" value="${turno.obraSocial}" required>
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" value="${turno.fecha}" required>
+
+            <label for="horario">Horario:</label>
+            <input type="text" id="horario" value="${turno.horario}" required>
+
+            <button type="submit" id="btnConfirmarModificacion">Confirmar Modificación</button>
+        </form>
+    `;
+
+    const formularioModificacion = document.getElementById("formularioModificacion");
+
+    formularioModificacion.addEventListener("submit", function (event) {
+        event.preventDefault();
+        confirmarModificacionTurno(turno, index);
+    });
+}
+
+function confirmarModificacionTurno(turnoOriginal, index) {
+    const nombre = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const dni = document.getElementById("dni").value.trim();
+    const obraSocial = document.getElementById("obraSocial").value.trim();
+    const fecha = document.getElementById("fecha").value.trim();
+    const horario = document.getElementById("horario").value.trim();
+
+    if (!nombre || !apellido || !dni || !obraSocial || !fecha || !horario) {
+        Swal.fire({
+            title: "Error",
+            text: "Por favor, completa todos los campos.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+        });
+        return;
+    }
+
+    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+    turnos[index] = { ...turnoOriginal, nombre, apellido, dni, obraSocial, fecha, horario };
+
+    localStorage.setItem("turnos", JSON.stringify(turnos));
+
+    Swal.fire({
+        title: "Turno Modificado",
+        text: `El turno ha sido modificado para el ${fecha} a las ${horario}.`,
+        icon: "success",
+        confirmButtonText: "Aceptar",
+    }).then(() => {
+        // Ocultar el formulario de modificación
+        document.getElementById("contenedorFormularioModificacion").innerHTML = "";
+        
+        // Mostrar la lista actualizada de turnos
+        mostrarTurnos();
+    });
 }

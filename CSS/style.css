@@ -1,0 +1,290 @@
+/* Estilos Generales */
+section, .form-container {
+    margin: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+form input, form select, form textarea {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+}
+
+form input:focus, form select:focus, form textarea:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+form .error-message {
+    color: red;
+    font-size: 12px;
+}
+
+h1 {
+    font-size: 36px; /* Tamaño grande para el título principal */
+    color: #2C3E50; /* Un color similar al de los otros títulos */
+    text-align: center; /* Centra el título */
+    font-weight: bold; /* Hace que el texto sea más grueso */
+    text-transform: capitalize; /* Asegura que la primera letra de cada palabra esté en mayúscula */
+    margin: 20px 0; /* Espacio por arriba y por abajo */
+    padding: 10px 0; /* Espaciado interior */
+    border-bottom: 3px solid #4CAF50; /* Agrega una línea verde debajo, similar a h2 */
+    letter-spacing: 1px; /* Espaciado entre letras para mayor legibilidad */
+    transition: color 0.3s ease, transform 0.3s ease; /* Transición suave para efectos */
+}
+
+h1:hover {
+    color: #4CAF50; /* Cambia el color al pasar el ratón, similar a otros elementos */
+    transform: translateY(-5px); /* Efecto de elevación suave */
+}
+
+
+/* Estilo de los Títulos */
+h2 {
+    font-size: 28px;
+    color: #2C3E50;
+    text-align: center;
+    text-transform: capitalize;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #4CAF50;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-family: 'Arial', sans-serif;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 24px;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    padding-bottom: 8px;
+}
+
+/* Estilo de los Contenedores y Profesionales */
+#contenedorProfesionales {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 50px;
+    gap: 20px;
+    justify-content: center;
+}
+
+.profesional {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 200px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    transition: transform 0.3s ease-in-out;
+    padding: 15px;
+}
+
+.profesional:hover {
+    transform: translateY(-10px);
+}
+
+.profesional img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #4CAF50;
+    margin-bottom: 15px;
+}
+
+.profesional p {
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+/* Botón "Sacar turno" */
+.btn-horario {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 14px;
+    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-horario:hover {
+    background-color: #45a049;
+}
+
+.btn-horario.seleccionado {
+    background-color: #d32f2f;
+    color: white;
+    border: 1px solid #900;
+}
+
+.btn-horario.seleccionado:hover {
+    background-color: #c2185b;
+}
+
+/* Botón "Administrar turno" y "Confirmar turno" */
+button,
+input[type="submit"],
+input[type="button"] {
+    margin-top: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+button:active,
+input[type="submit"]:active,
+input[type="button"]:active {
+    background-color: #3e8e41;
+    transform: scale(0.98);
+}
+
+/* Botón Secundario */
+.btn-secundario {
+    background-color: #f44336;
+}
+
+.btn-secundario:hover {
+    background-color: #e53935;
+}
+
+/* Botón Deshabilitado */
+button:disabled,
+input[type="submit"]:disabled,
+input[type="button"]:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Estilo para el Input de Búsqueda */
+#buscador {
+    width: 300px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    outline: none;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#buscador:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+#buscador:not(:placeholder-shown) {
+    background-color: #e9f7e6;
+}
+
+#buscador::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Ajustes para el contenedor del botón de búsqueda */
+.buscador {
+    width: auto;
+    margin: 0 auto;
+}
+
+/* Estilo del Botón de Buscar */
+.btnBuscar {
+    display: flex;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    width: 100px;
+    justify-content: center;
+}
+
+.btnBuscar:hover {
+    background-color: #45a049;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    #contenedorProfesionales {
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .profesional {
+        width: 150px;
+    }
+
+    .btn-horario {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .profesional {
+        width: 180px; /* Ajusta el tamaño para tablets */
+    }
+
+    .btn-horario {
+        padding: 10px 18px;
+    }
+}
+
+@media (min-width: 1024px) {
+    h2 {
+        font-size: 32px; /* Aumenta el tamaño de fuente en pantallas grandes */
+    }
+    .profesional p {
+        font-size: 16px; /* Ajusta tamaño del texto */
+    }
+}
